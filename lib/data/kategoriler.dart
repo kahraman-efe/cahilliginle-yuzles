@@ -15,5 +15,9 @@ final List<Kategori> tumKategoriler = [
   Kategori("Sinema", Icons.movie, const Color(0xFFE91E63)),
   Kategori("Oyun", Icons.sports_esports, const Color(0xFF673AB7)),
   Kategori("Uzay", Icons.rocket_launch, const Color(0xFF3F51B5)),
+  Kategori("KPSS", Icons.edit_document, const Color(0xFF16A085)),
+  Kategori("Arabalar", Icons.directions_car, const Color(0xFFD35400)),
+  Kategori("Genel Kültür", Icons.lightbulb, const Color(0xFFF1C40F)),
+  Kategori("Memeler (Capsler)", Icons.emoji_emotions, const Color(0xFFFF6F91)),
   // Daha fazlasını aynı formatta buraya ekleyebilirsin.
 ];

@@ -49,4 +49,21 @@ class StorageService {
     if (puan > enYuksekSkor) enYuksekSkor = puan;
     if (maxCombo > enUzunSeri) enUzunSeri = maxCombo;
   }
+
+    // Görülen soru ID'lerini kategori+zorluk bazlı sakla
+  static List<String> gorulenSorular(String anahtar) {
+    return _prefs.getStringList('gorulen_$anahtar') ?? [];
+  }
+
+  static Future<void> gorulenSorulariEkle(String anahtar, List<String> yeniIdler) async {
+    List<String> mevcut = gorulenSorular(anahtar);
+    for (var id in yeniIdler) {
+      if (!mevcut.contains(id)) mevcut.add(id);
+    }
+    await _prefs.setStringList('gorulen_$anahtar', mevcut);
+  }
+
+  static Future<void> gorulenSorulariSifirla(String anahtar) async {
+    await _prefs.remove('gorulen_$anahtar');
+  }
 }

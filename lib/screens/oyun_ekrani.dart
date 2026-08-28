@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart'; // SES PAKETİ EKLENDİ
 import '../theme/app_colors.dart';
 import '../models/models.dart';
 import 'sonuc_ekrani.dart';
+import '../services/storage_service.dart';
 
 class OyunEkrani extends StatefulWidget {
   final Kategori kategori;
@@ -44,9 +45,10 @@ class _OyunEkraniState extends State<OyunEkrani> {
     super.dispose();
   }
 
-  Future<void> _firebaseDenSorulariCek() async {
+   Future<void> _firebaseDenSorulariCek() async {
     try {
       String zorlukString = widget.zorluk.name;
+      String anahtar = "${widget.kategori.ad}_$zorlukString";
 
       var snapshot = await FirebaseFirestore.instance
           .collection('Sorular')
@@ -54,9 +56,10 @@ class _OyunEkraniState extends State<OyunEkrani> {
           .where('zorluk', isEqualTo: zorlukString)
           .get();
 
-      List<Soru> cekilenSorular = snapshot.docs.map((doc) {
+      List<Soru> tumSorular = snapshot.docs.map((doc) {
         var data = doc.data();
         return Soru(
+          id: doc.id, // YENİ
           kategori: data['kategori'] ?? '',
           zorluk: widget.zorluk,
           soruMetni: data['soruMetni'] ?? '',
@@ -70,8 +73,23 @@ class _OyunEkraniState extends State<OyunEkrani> {
         );
       }).toList();
 
-      cekilenSorular.shuffle();
-      aktifSorular = cekilenSorular.take(10).toList();
+      // Daha önce görülmüş soruları filtrele
+      List<String> gorulenler = StorageService.gorulenSorular(anahtar);
+      List<Soru> gorulmemisSorular =
+          tumSorular.where((s) => !gorulenler.contains(s.id)).toList();
+
+      // Görülmemiş soru kalmadıysa listeyi sıfırla, baştan başla
+      if (gorulmemisSorular.length < 10) {
+        await StorageService.gorulenSorulariSifirla(anahtar);
+        gorulmemisSorular = tumSorular;
+      }
+
+      gorulmemisSorular.shuffle();
+      aktifSorular = gorulmemisSorular.take(10).toList();
+
+      // Bu sefer gösterilecek soruları "görülen" olarak işaretle
+      await StorageService.gorulenSorulariEkle(
+          anahtar, aktifSorular.map((s) => s.id).toList());
 
       setState(() {
         isLoading = false;
@@ -83,7 +101,6 @@ class _OyunEkraniState extends State<OyunEkrani> {
       });
     }
   }
-
   int get dogruPuani {
     switch (widget.zorluk) {
       case Zorluk.kolay:
@@ -120,7 +137,7 @@ class _OyunEkraniState extends State<OyunEkrani> {
       secilenSik = kullaniciCevabi;
 
       if (dogruMu) {
-        _audioPlayer.play(AssetSource('sesler/dogru.mp3')); // DOĞRU SESİ
+        _audioPlayer.play(AssetSource('sesler/dogru.wav')); // DOĞRU SESİ
         dogruSayisi++;
         combo++;
         if (combo > maxCombo) maxCombo = combo;
@@ -128,7 +145,7 @@ class _OyunEkraniState extends State<OyunEkrani> {
         int kazanilan = dogruPuani + (combo > 1 ? combo * 2 : 0);
         puan += kazanilan;
       } else {
-        _audioPlayer.play(AssetSource('sesler/yanlis.mp3')); // YANLIŞ SESİ
+        _audioPlayer.play(AssetSource('sesler/yanlis.wav')); // YANLIŞ SESİ
         yanlisSayisi++;
         combo = 0;
         puan -= yanlisPuani;

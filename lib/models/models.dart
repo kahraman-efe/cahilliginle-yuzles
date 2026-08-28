@@ -19,6 +19,7 @@ class Kategori {
 
 // Resim ve Ses destekli Soru modelimiz
 class Soru {
+  final String id; // YENİ - Firestore doküman ID'si
   final String kategori;
   final Zorluk zorluk;
   final String soruMetni;
@@ -31,6 +32,7 @@ class Soru {
   final String? sesUrl;    // Ses linki (opsiyonel)
 
   Soru({
+    required this.id, // YENİ
     required this.kategori,
     required this.zorluk,
     required this.soruMetni,

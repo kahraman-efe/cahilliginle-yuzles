@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "157878139478",
+    "project_id": "cahilliginle-yuzles",
+    "storage_bucket": "cahilliginle-yuzles.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157878139478:android:f3ca31d4f8ebc883e699f7",
+        "android_client_info": {
+          "package_name": "com.example.ilk_uygulamam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3k-mBSeJrI05k-yqw9_okVvf97IN2mhE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
